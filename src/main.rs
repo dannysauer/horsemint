@@ -6,6 +6,7 @@ use rumqttc::{MqttOptions, Client, QoS};
 fn main() {
     let mut mqttoptions = MqttOptions::new("rumqtt-sync-client", "localhost", 1883);
     mqttoptions.set_keep_alive(5);
+    mqttoptions.set_credentials("health_user", "health_pass");
 
     let (mut client, mut connection) = Client::new(mqttoptions, 10);
     client.subscribe("hello/rumqtt", QoS::AtMostOnce).unwrap();
@@ -24,6 +25,18 @@ fn main() {
      * Bad auth:
      * Notification = Err(Io(Custom { kind: InvalidData, error: "Broker rejected connection. Reason = NotAuthorized" }))
      *  Notification = Err(Io(Custom { kind: ConnectionReset, error: "connection reset by peer" }))
+     *
+     *  Ok:
+     *  Notification = Ok((Some(Connected), None))
+     *  Notification = Ok((None, Some(Subscribe(1))))
+     *  Notification = Ok((None, Some(Publish(2))))
+     *  Notification = Ok((Some(SubAck(SubAck { pkid: 1, return_codes: [Success(AtMostOnce)] })), None))
+     *  Notification = Ok((Some(PubAck(PubAck { pkid: 2 })), None))
+     *  Notification = Ok((Some(Publish(Topic = hello/rumqtt, Qos = AtMostOnce, Retain = false, Pkid = 0, Payload Size = 0)), None))
+     *  Notification = Ok((None, Some(PingReq)))
+     *  Notification = Ok((Some(PingResp), None))
+     *  Notification = Ok((None, Some(PingReq)))
+     *  Notification = Ok((Some(PingResp), None))
      */
     for (_i, notification) in connection.iter().enumerate() {
         if notification.is_err() {
@@ -43,6 +56,9 @@ fn main() {
                 println!("refused: {:?}", notification);
             }
             */
+        }
+        else {
+            // success!
         }
         println!("Notification = {:?}", notification);
     }
