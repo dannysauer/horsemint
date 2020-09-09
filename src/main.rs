@@ -40,7 +40,8 @@ fn main() {
      */
     for (_i, notification) in connection.iter().enumerate() {
         if notification.is_err() {
-            println!("Notification = {:?}", notification);
+            let n = notification.err();
+            println!("Failure Notification = {:?}", n);
             /*
              * TODO: figure out how to get error kind :/
              *
@@ -50,18 +51,17 @@ fn main() {
                 _ => println!("kapow"),
             }
             */
-            break;
            /* 
              if notification.unwrap_err().kind() == std::io::ErrorKind::ConnectionRefused {
                 println!("refused: {:?}", notification);
             }
             */
+            break;
         }
         else {
             // success!
+            let n = notification.ok().unwrap_or_default();
+            println!("Notification n = {:?}", n);
         }
-        println!("Notification = {:?}", notification);
     }
-
-    println!("Hello, world!");
 }
