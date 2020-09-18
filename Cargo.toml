@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 #mqtt = "0.1.4"
 rumqttc = "0.0.6"
+config = "0.10.1"
