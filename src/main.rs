@@ -1,12 +1,30 @@
+extern crate config;
+
 use rumqttc::{MqttOptions, Client, QoS};
+//use std::collections::HashMap;
 //use std::time::Duration;
 //use std::thread;
 //use std::io::{ErrorKind};
 
 fn main() {
-    let mut mqttoptions = MqttOptions::new("rumqtt-sync-client", "localhost", 1883);
+    let mut settings = config::Config::default();
+    settings
+        // config files
+        //.merge(config::File::with_name("/etc/horsemint/horsemint")).unwrap()
+        .merge(config::File::with_name("Settings")).unwrap()
+        // environment vars starting with $HORSEMINT_
+        .merge(config::Environment::with_prefix("HORSEMINT")).unwrap()
+        ;
+    let mut mqttoptions = MqttOptions::new(
+        settings.get_str("mqtt_channel").unwrap_or_default(),
+        settings.get_str("mqtt_host").unwrap_or_default(),
+        settings.get_int("mqtt_port").unwrap_or_default() as u16
+        );
     mqttoptions.set_keep_alive(5);
-    mqttoptions.set_credentials("health_user", "health_pass");
+    mqttoptions.set_credentials(
+        settings.get_str("username").unwrap_or_default(),
+        settings.get_str("password").unwrap_or_default()
+        );
 
     let (mut client, mut connection) = Client::new(mqttoptions, 10);
     client.subscribe("hello/rumqtt", QoS::AtMostOnce).unwrap();
