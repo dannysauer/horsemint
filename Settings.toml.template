@@ -1,0 +1,6 @@
+# defaults if not specified:
+#username = ""
+#password = ""
+#mqtt_host = "localhost"
+#mqtt_port = 1883
+#mqtt_channel = "rumqtt-sync-client"
