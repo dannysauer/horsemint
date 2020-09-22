@@ -11,3 +11,6 @@ Cargo.lock
 
 # Settings file
 Settings.toml
+
+# vim
+.*.swp
